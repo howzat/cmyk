@@ -1,0 +1,47 @@
+schema {
+    query: Query
+}
+
+type Query {
+    getProfile: MyProfile!
+    searchProducts(productSearchInput: ProductSearchInput!, limit: Int!, nextToken: String): ProductSearchResults!
+}
+
+type MyProfile {
+    id: ID!
+    username: String!
+    location: String
+    createdAt: AWSDateTime!
+}
+
+enum CurrencyCode {
+    GBP
+    USD
+}
+
+type Decimal {
+    value: String
+}
+
+type Money {
+    price: Decimal
+    currencyCode: CurrencyCode
+}
+
+type Product {
+    id: String!
+    rgb: String!
+    description: String!
+    price: Money!
+
+}
+
+type ProductSearchResults {
+    products: [Product!]
+    nextToken: String
+}
+
+input ProductSearchInput {
+    rgb: String!
+}
+

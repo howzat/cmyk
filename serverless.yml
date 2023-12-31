@@ -1,0 +1,18 @@
+service: cmyk-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: go1.x
+
+package:
+  patterns:
+    - '!./**'
+    - ./bin/**
+
+plugins:
+  - serverless-appsync-plugin
+
+custom:
+  appSync:
+    - ${file(cmyk-api.yml)}

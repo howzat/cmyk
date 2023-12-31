@@ -1,0 +1,4 @@
+Scalars for appsync learning about aws types
+https://gist.github.com/sc0ttdav3y/76e370ecf7047c036b19d57b419fb126
+
+npm run sls -- create -t aws-go-mod    
