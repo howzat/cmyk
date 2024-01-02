@@ -1,16 +1,15 @@
-schema {
-    query: Query
-}
-
 type Query {
     getProfile: MyProfile!
     searchProducts(productSearchInput: ProductSearchInput!, limit: Int!, nextToken: String): ProductSearchResults!
 }
 
+schema {
+    query: Query
+}
+
 type MyProfile {
     id: ID!
     username: String!
-    location: String
     createdAt: AWSDateTime!
 }
 

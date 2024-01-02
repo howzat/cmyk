@@ -14,6 +14,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "serverless": "^3.38.0"
+    "serverless": "^3.38.0",
+    "serverless-appsync-plugin": "^2.6.0",
+    "serverless-export-env": "^2.2.0",
+    "serverless-iam-roles-per-function": "^3.2.0"
   }
 }

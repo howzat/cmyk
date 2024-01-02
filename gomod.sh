@@ -1,5 +1,4 @@
-#!/bin/bash
-set -eu
+#!/usr/bin/env bash
 
 if [ -f ./go.mod ]; then
     exit 0

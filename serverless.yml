@@ -3,7 +3,11 @@ frameworkVersion: '3'
 
 provider:
   name: aws
+  stage: dev # defaults to dev as the stage anyway
   runtime: go1.x
+  region: eu-west-2
+  environment:
+    STAGE: ${self:custom.stage}
 
 package:
   patterns:
@@ -12,7 +16,45 @@ package:
 
 plugins:
   - serverless-appsync-plugin
+  - serverless-export-env
+  - serverless-iam-roles-per-function
 
 custom:
-  appSync:
-    - ${file(cmyk-api.yml)}
+  stage: ${opt:stage, self:provider.stage}
+functions:
+  confirmUserSignup:
+    handler: bin/confirm-user-signup
+    environment:
+      USERS_TABLE: !Ref UsersTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action: dynamodb:PutItem
+        Resource: !GetAtt UsersTable.Arn
+
+appSync:
+  name: cmyk-api
+  schema: 'schema.api.graphql'
+  authentication:
+    type: 'AMAZON_COGNITO_USER_POOLS'
+    config:
+      awsRegion: eu-west-2
+      defaultAction: ALLOW
+      userPoolId: eu-west-2_60KcaRD1C
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        BillingMode: PAY_PER_REQUEST
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        Tags:
+          - Key: Environment
+            Value: ${self:custom.stage}
+          - Key: Name
+            Value: users-table
