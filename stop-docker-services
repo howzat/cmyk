@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+docker stop dynamodb-cmyk-local
+docker rm -f dynamodb-cmyk-local

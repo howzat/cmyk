@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+./stop-docker-services
+./reset-test-dynamo
+./start-docker-services
+
+

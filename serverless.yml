@@ -4,8 +4,8 @@ frameworkVersion: '3'
 provider:
   name: aws
   stage: dev # defaults to dev as the stage anyway
-  runtime: go1.x
   region: eu-west-2
+  runtime: go1.x
   environment:
     STAGE: ${self:custom.stage}
 
@@ -18,9 +18,17 @@ plugins:
   - serverless-appsync-plugin
   - serverless-export-env
   - serverless-iam-roles-per-function
+  - serverless-manifest-plugin
 
 custom:
   stage: ${opt:stage, self:provider.stage}
+  region: ${opt:region, self:provider.region}
+  manifest:
+    postProcess: ./processManifest.js
+    disablePostDeployGeneration: true
+    disableOutput: true
+    silent: true
+  
 functions:
   confirmUserSignup:
     handler: bin/confirm-user-signup
@@ -58,3 +66,14 @@ resources:
             Value: ${self:custom.stage}
           - Key: Name
             Value: users-table
+  
+  Outputs:
+    AwsRegion:
+      Value: ${self:custom.region}
+    
+    GraphQlApiUrl:
+      Value: ${appsync:url}
+    
+    GraphQlApiArn:
+      Value: ${appsync:arn}
+    

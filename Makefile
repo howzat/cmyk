@@ -1,14 +1,17 @@
-.PHONY: build clean deploy gomodgen
+.PHONY: build clean test test-short gomodgen
 
 build: gomodgen
 	export GO111MODULE=on
-	env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o bin/confirm-user-signup handlers/confirm-user-signup/main.go
+	env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o lambdas/bin/cognito-auth-challenge lambdas/cognito-auth-challenge.go
 
 clean:
-	rm -rf ./bin ./vendor
+	rm -rf ./handlers/bin
 
-deploy: clean build
-	sls deploy --verbose
+test:
+	go test -v ./handlers/...
+
+test-short:
+	go test -test.short -v ./handlers/...
 
 gomodgen:
 	chmod u+x gomod.sh

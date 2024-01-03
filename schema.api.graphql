@@ -10,6 +10,7 @@ schema {
 type MyProfile {
     id: ID!
     username: String!
+    email: String!
     createdAt: AWSDateTime!
 }
 

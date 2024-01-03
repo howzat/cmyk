@@ -6,3 +6,11 @@ authentication:
     awsRegion: eu-west-2
     defaultAction: ALLOW
     userPoolId: !Ref arn:aws:cognito-idp:eu-west-2:251218138950:userpool/eu-west-2_60KcaRD1C
+
+dataSources:
+  - type: NONE
+    name: none
+  - type: AMAZON_DYNAMODB
+    name: usersTable
+    config:
+      tableName: !Ref UsersTable

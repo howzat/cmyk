@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+reset_table() {
+  table="$1"
+  # Suppress all output, even errors, from delete because delete will fail if the table doesn't already exist, which is OK
+  aws --endpoint-url=http://localhost:8000 dynamodb delete-table --table-name "$table" >/dev/null 2>&1
+}
+
+# Dummy AWS credentials to work around `Unable to locate credentials. You can configure credentials by running "aws configure".` error from `aws dynamodb create-table`.
+AWS_REGION=${REGION:-local}
+AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-key-id}
+AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-secret}
+export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
+
+reset_table userstable
+
+./start-docker-services
+
+echo "Test Dynamo instance deleted successfully"
