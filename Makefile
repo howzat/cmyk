@@ -2,7 +2,7 @@
 
 build: gomodgen
 	export GO111MODULE=on
-	env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o lambdas/bin/cognito-auth-challenge lambdas/cognito-auth-challenge.go
+	env GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o handlers/bin/cognito-auth-challenge handlers/cognito-auth-challenge.go
 
 clean:
 	rm -rf ./handlers/bin

@@ -36,7 +36,7 @@ type cognitoPostSignUpHandler struct {
 func (h *cognitoPostSignUpHandler) Handler(event events.CognitoEventUserPoolsPostConfirmation) (events.CognitoEventUserPoolsPostConfirmation, error) {
 
 	if strings.EqualFold(event.TriggerSource, "PostConfirmation_Confirm_SignUp") {
-		err := db.AddUser(context.TODO(),
+		_, err := db.AddUser(context.TODO(),
 			event.Request.UserAttributes["username"],
 			event.Request.UserAttributes["email"],
 		)

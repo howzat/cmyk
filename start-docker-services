@@ -11,4 +11,4 @@ export WORK_DIR
 export DYNAMO_ENDPOINT
 
 docker-compose -f docker-compose.yml up -d
-./ddb/ddb-schemas/create-dynamodb-tables.sh ./ddb/ddb-schemas/userstable
+./ddb/ddb-schemas/create-dynamodb-tables.sh ./ddb/ddb-schemas/users

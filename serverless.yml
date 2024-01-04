@@ -4,8 +4,8 @@ frameworkVersion: '3'
 provider:
   name: aws
   stage: dev # defaults to dev as the stage anyway
-  region: eu-west-2
   runtime: go1.x
+  region: eu-west-2
   environment:
     STAGE: ${self:custom.stage}
 
@@ -54,6 +54,7 @@ resources:
     UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
+        TableName: users
         BillingMode: PAY_PER_REQUEST
         KeySchema:
           - AttributeName: id
@@ -70,7 +71,7 @@ resources:
   Outputs:
     AwsRegion:
       Value: ${self:custom.region}
-    
+      
     GraphQlApiUrl:
       Value: ${appsync:url}
     

@@ -10,6 +10,7 @@ import (
 	"github.com/projects/cmyk-tools/handlers/model"
 	"github.com/projects/cmyk-tools/handlers/util"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"log"
 	"os"
 	"testing"
@@ -22,20 +23,20 @@ func TestCognitoPostSignUp_Integration(t *testing.T) {
 		t.Skip("skipping test in short mode.")
 	}
 
-	err := godotenv.Load("../.env")
+	err := godotenv.Load("../.env", "../.env.static-refs")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	ok := os.Getenv("LOADED")
-	assert.Equal(t, "OK", ok)
+	region := os.Getenv("AWS_REGION")
+	require.NotEmpty(t, region, "region must not be empty")
+	userPoolID := os.Getenv("COGNITO_USER_POOL_ID")
+	require.NotEmpty(t, userPoolID, "COGNITO_USER_POOL_ID must not be empty")
 
 	now := time.Now()
 	clock := util.NewFixedClock(now)
 	var handler CognitoPostSignUpFn = NewCognitoPostSignUpHandler(clock)
 	user := util.RandomUser()
-	region := "eu-west-1"
-	userPoolID := "COGNITO_USER_POOL_ID"
 
 	_, err = handler(*createCognitoPostSignUpEvent(user, region, userPoolID))
 	assert.NoError(t, err)
@@ -52,7 +53,7 @@ func lookupUserInDynamoDB(email string) (*model.User, error) {
 
 	ctx := context.TODO()
 	repo := ddb.NewUsersTableRepo(ctx, os.Getenv("AWS_REGION"))
-	return repo.GetUserByEmail(ctx, email)
+	return repo.GetUser(ctx, email)
 }
 
 func createCognitoPostSignUpEvent(user model.User, userpoolID, region string) *events.CognitoEventUserPoolsPostConfirmation {

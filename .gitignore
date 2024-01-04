@@ -2,8 +2,8 @@
 .serverless
 
 # Serverless directories
-.serverless
 .env
+.env.static-refs
 # Ignore serverless manifest files
 serverless.manifest.json
 .serverless/manifest.json

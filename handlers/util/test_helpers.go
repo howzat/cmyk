@@ -7,16 +7,9 @@ import (
 )
 
 func RandomUser() model.User {
-	timestamp, ulid, err := CurrentTimeAndULID(NewRealClock())
-	if err != nil {
-		panic(err)
-	}
-
 	return model.User{
-		Username:  gofakeit.Username(),
-		Email:     randomEmail(),
-		Id:        ulid.String(),
-		CreatedAt: timestamp,
+		Username: gofakeit.Username(),
+		Email:    randomEmail(),
 	}
 }
 

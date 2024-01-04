@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/projects/cmyk-tools/handlers/model"
 	"github.com/projects/cmyk-tools/handlers/util"
+	"github.com/rs/zerolog"
 	"log"
 	"time"
 )
@@ -24,14 +25,14 @@ func NewUsersTableRepo(ctx context.Context, region string) UsersTableRepo {
 	}
 }
 
-func (r *UsersTableRepo) AddUser(ctx context.Context, username, email string) error {
+func (r *UsersTableRepo) AddUser(ctx context.Context, username, email string) (*model.User, error) {
 
 	currentTime, id, err := util.CurrentTimeAndULID(r.clock)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	user := createUser{
+	entity := createUserEntity{
 		Username:  username,
 		Email:     email,
 		Pk:        id.String(),
@@ -39,51 +40,63 @@ func (r *UsersTableRepo) AddUser(ctx context.Context, username, email string) er
 		CreatedAt: currentTime.Format(time.RFC3339),
 	}
 
-	idPK, err := attributevalue.MarshalMap(user)
+	userEntity, err := attributevalue.MarshalMap(entity)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	user.Pk = user.Email
-	emailPK, err := attributevalue.MarshalMap(user)
+	entity.Pk = email // allows a uniqueness constraint on email
+	emailEntity, err := attributevalue.MarshalMap(entity)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = r.ddb.Client.TransactWriteItems(ctx, &dynamodb.TransactWriteItemsInput{
+	res, err := r.ddb.Client.TransactWriteItems(ctx, &dynamodb.TransactWriteItemsInput{
 		TransactItems: []types.TransactWriteItem{
 			{
 				Put: &types.Put{
-					Item:                idPK,
+					Item:                userEntity,
 					TableName:           aws.String(r.ddb.Tablename),
 					ConditionExpression: aws.String("attribute_not_exists(pk)"),
 				},
 			},
 			{
 				Put: &types.Put{
-					Item:                emailPK,
+					Item:                emailEntity,
 					TableName:           aws.String(r.ddb.Tablename),
 					ConditionExpression: aws.String("attribute_not_exists(pk)"),
 				},
 			},
 		}})
 
-	return err
+	zerolog.Ctx(ctx).Info().Any("res", res).Msg("adding user to table response")
+
+	return entity.ToUser(), err
 }
 
-func (r *UsersTableRepo) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
-	var user model.User
+func (r *UsersTableRepo) GetUser(ctx context.Context, pk string) (*model.User, error) {
+	var entity createUserEntity
 	err := r.ddb.GetByKey(ctx, map[string]types.AttributeValue{
-		"email": &types.AttributeValueMemberS{Value: email},
-	}, &user)
+		"pk": &types.AttributeValueMemberS{Value: pk},
+	}, &entity)
 
-	return &user, err
+	return entity.ToUser(), err
 }
 
-type createUser struct {
-	Username  string `json:"username" validate:"required"`
-	Email     string `json:"email" validate:"required"`
-	Pk        string `json:"pk" validate:"required"`
-	Id        string `json:"id" validate:"required"`
-	CreatedAt string `json:"createdAt" validate:"required"`
+type createUserEntity struct {
+	Username  string `dynamodbav:"username" validate:"required"`
+	Email     string `dynamodbav:"email" validate:"required"`
+	Pk        string `dynamodbav:"pk" validate:"required"`
+	Id        string `dynamodbav:"id" validate:"required"`
+	CreatedAt string `dynamodbav:"createdAt" validate:"required"`
+}
+
+func (ue *createUserEntity) ToUser() *model.User {
+	return &model.User{
+		Username:  ue.Username,
+		Email:     ue.Email,
+		Pk:        ue.Pk,
+		Id:        ue.Id,
+		CreatedAt: ue.CreatedAt,
+	}
 }

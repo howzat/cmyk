@@ -27,8 +27,7 @@ type DynamoRepository struct {
 	Client    *dynamodb.Client
 }
 
-func NewInstance(ctx context.Context, regionKey string, tablenameKey string) DynamoRepository {
-	region := os.Getenv(regionKey)
+func NewInstance(ctx context.Context, region string, tablenameKey string) DynamoRepository {
 	tablename := os.Getenv(tablenameKey)
 
 	return NewInstanceWithValues(*zerolog.Ctx(ctx), region, tablename)
