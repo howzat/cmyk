@@ -4,7 +4,7 @@ frameworkVersion: '3'
 provider:
   name: aws
   stage: dev # defaults to dev as the stage anyway
-  runtime: provided.al2
+  runtime: provided.al2023
   region: eu-west-2
   environment:
     STAGE: ${self:custom.stage}
