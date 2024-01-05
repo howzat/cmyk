@@ -2,3 +2,4 @@
 
 echo "INSTALL COMMANDS"
 npm run sls --version
+make build

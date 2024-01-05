@@ -9,9 +9,10 @@ import (
 	ddb "github.com/projects/cmyk-tools/handlers/db"
 	"github.com/projects/cmyk-tools/handlers/model"
 	"github.com/projects/cmyk-tools/handlers/util"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"log"
 	"os"
 	"testing"
 	"text/template"
@@ -25,7 +26,7 @@ func TestCognitoPostSignUp_Integration(t *testing.T) {
 
 	err := godotenv.Load("../.env", "../.env.static-refs")
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Ctx(context.TODO()).Fatal().Msg("Error loading .env file")
 	}
 
 	region := os.Getenv("AWS_REGION")
@@ -38,7 +39,7 @@ func TestCognitoPostSignUp_Integration(t *testing.T) {
 	var handler CognitoPostSignUpFn = NewCognitoPostSignUpHandler(clock)
 	user := util.RandomUser()
 
-	_, err = handler(*createCognitoPostSignUpEvent(user, region, userPoolID))
+	_, err = handler(context.TODO(), *createCognitoPostSignUpEvent(user, region, userPoolID))
 	assert.NoError(t, err)
 
 	found, err := lookupUserInDynamoDB(user.Email)
@@ -56,7 +57,7 @@ func lookupUserInDynamoDB(email string) (*model.User, error) {
 	return repo.GetUser(ctx, email)
 }
 
-func createCognitoPostSignUpEvent(user model.User, userpoolID, region string) *events.CognitoEventUserPoolsPostConfirmation {
+func createCognitoPostSignUpEvent(user model.User, region, userpoolID string) *events.CognitoEventUserPoolsPostConfirmation {
 
 	var rawJson bytes.Buffer
 	err := Create("jsonEvent", `{
@@ -82,6 +83,8 @@ func createCognitoPostSignUpEvent(user model.User, userpoolID, region string) *e
 		"Email":      user.Email,
 	})
 
+	logger := util.NewDevLogger(zerolog.InfoLevel)
+	logger.Info().Msg(rawJson.String())
 	if err != nil {
 		panic(err)
 	}

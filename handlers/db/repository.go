@@ -11,11 +11,12 @@ import (
 	"github.com/rs/zerolog"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-const UsersTableEnvKey = "DYNAMODB_USERS_TABLE"
+const UsersTableEnvKey = "USERS_TABLE"
 
 type Transaction interface {
 	TransactPut(ctx *context.Context, items []*types.TransactWriteItem) error
@@ -54,6 +55,7 @@ func (r *DynamoRepository) GetClient() *dynamodb.Client {
 }
 
 func NewDynamoDB(region string) *dynamodb.Client {
+
 	awsConfig, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion(region),
 	)
@@ -238,4 +240,17 @@ func (r *DynamoRepository) TransactPutMultiTable(ctx context.Context, arr []Mult
 	}
 	zerolog.Ctx(ctx).Debug().Any("items", items).Msg("Persisted transactional items")
 	return nil
+}
+
+func ExtractCancellationReasons(reasons []types.CancellationReason) string {
+	var out strings.Builder
+	for _, r := range reasons {
+		if r.Code != nil && r.Message != nil {
+			if !strings.EqualFold(*r.Code, "None") {
+				out.WriteString(spew.Sprintf("%s: %s\n", *r.Code, *r.Message))
+			}
+		}
+	}
+
+	return out.String()
 }

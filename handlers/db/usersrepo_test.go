@@ -12,19 +12,21 @@ import (
 func TestStoreAndRetrieveUser(t *testing.T) {
 
 	ctx := context.TODO()
-	err := godotenv.Load("../../.env.tests")
+
+	err := godotenv.Load("../../.env")
 	if err != nil {
-		t.Fatal("Error loading .env.local file")
+		t.Fatal("Error loading .env file")
 	}
 
 	region := os.Getenv("AWS_REGION")
-	ok := os.Getenv("LOADED")
-	assert.Equal(t, "OK", ok)
+
+	t.Log(region)
 
 	repo := NewUsersTableRepo(ctx, region)
 	u := util.RandomUser()
 	savedUser, err := repo.AddUser(ctx, u.Username, u.Email)
-	assert.NoError(t, err)
+
+	assert.NoError(t, err, "nope")
 
 	got, err := repo.GetUser(ctx, u.Email)
 	assert.NoError(t, err)
