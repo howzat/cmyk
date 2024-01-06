@@ -7,7 +7,7 @@ provider:
   runtime: provided.al2023
   region: eu-west-2
   iam:
-    deploymentRole: !Sub: arn:aws:iam::${AWS::AccountId}:role/CMYKServerlessDeployerRole
+    deploymentRole: !Sub arn:aws:iam::251218138950:role/CMYKServerlessDeployerRole
   environment:
     STAGE: ${self:custom.stage}
 
