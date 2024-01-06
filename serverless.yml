@@ -6,6 +6,10 @@ provider:
   stage: dev # defaults to dev as the stage anyway
   runtime: provided.al2023
   region: eu-west-2
+  provider:
+    iam:
+      deploymentRole:
+      Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/CMYKServerlessDeployerRole'
   environment:
     STAGE: ${self:custom.stage}
 
