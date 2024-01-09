@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -x
 echo "INSTALL COMMANDS"
+npm run exportEnv
 npm ci
 npm run exportEnv
 npm run sls --version

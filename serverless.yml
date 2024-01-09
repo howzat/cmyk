@@ -4,10 +4,11 @@ frameworkVersion: '3'
 provider:
   name: aws
   stage: dev # defaults to dev as the stage anyway
+  deploymentMethod: direct
   runtime: provided.al2023
   region: eu-west-2
   iam:
-    deploymentRole: arn:aws:iam::${aws:accountId}:role/CMYKServerlessDeployerRole
+    deploymentRole: arn:aws:iam::${aws:accountId}:role/CMYKDeployerRole
   environment:
     STAGE: ${self:custom.stage}
 
