@@ -8,7 +8,7 @@ provider:
   runtime: provided.al2023
   region: eu-west-2
   iam:
-    deploymentRole: arn:aws:iam::${aws:accountId}:role/CMYKDeployerRole
+    deploymentRole: arn:aws:iam::${aws:accountId}:role/CMYKCloudFormationExecutionRole
   environment:
     STAGE: ${self:custom.stage}
 
@@ -31,7 +31,7 @@ custom:
     disablePostDeployGeneration: true
     disableOutput: true
     silent: true
-  
+
 functions:
   confirmUserSignup:
     handler: handlers/bin/confirm-user-signup
@@ -75,11 +75,41 @@ resources:
             Value: ${self:custom.stage}
           - Key: Name
             Value: users
+    
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        AutoVerifiedAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireLowercase: false
+            RequireNumbers: false
+            RequireUppercase: false
+            RequireSymbols: false
+        UsernameAttributes:
+          - email
+        Schema:
+          - AttributeDataType: String
+            Name: name
+            Required: false
+            Mutable: true
+        LambdaConfig:
+          PostConfirmation: !GetAtt ConfirmUserSignupLambdaFunction.Arn
+  
+    UserPoolInvokeConfirmUserSignupLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: lambda:invokeFunction
+        FunctionName: !Ref ConfirmUserSignupLambdaFunction
+        Principal: cognito-idp.amazonaws.com
+        SourceArn: !GetAtt CognitoUserPool.Arn
   
   Outputs:
     AwsRegion:
       Value: ${self:custom.region}
-      
+    
     GraphQlApiUrl:
       Value: ${appsync:url}
     
