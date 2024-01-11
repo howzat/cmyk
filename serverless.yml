@@ -58,7 +58,7 @@ resources:
     UsersTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: users
+        TableName: cmyk-users
         BillingMode: PAY_PER_REQUEST
         KeySchema:
           - AttributeName: pk
@@ -79,6 +79,7 @@ resources:
     CognitoUserPool:
       Type: AWS::Cognito::UserPool
       Properties:
+        UserPoolName: cmyk-user-pool
         AutoVerifiedAttributes:
           - email
         Policies:
