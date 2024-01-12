@@ -10,19 +10,28 @@ import (
 
 func NewDevLogger(level zerolog.Level) zerolog.Logger {
 	buildInfo, _ := debug.ReadBuildInfo()
+	var output io.Writer = zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+	return NewZeroLog(level, output).
+		With().
+		Int("pid", os.Getpid()).
+		Str("go_version", buildInfo.GoVersion).
+		Logger()
+}
 
-	// colourise for consoles
-	var output io.Writer = zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}
-	if len(os.Getenv("STAGE")) != 0 {
-		output = os.Stdout
-	}
+func NewProdLogger(level zerolog.Level) zerolog.Logger {
+	buildInfo, _ := debug.ReadBuildInfo()
+	return NewZeroLog(level, os.Stdout).
+		With().
+		Int("pid", os.Getpid()).
+		Str("go_version", buildInfo.GoVersion).
+		Logger()
+}
 
-	return zerolog.New(output).
+func NewZeroLog(level zerolog.Level, out io.Writer) zerolog.Logger {
+	return zerolog.New(out).
 		Level(level).
 		With().
 		Timestamp().
 		Caller().
-		Int("pid", os.Getpid()).
-		Str("go_version", buildInfo.GoVersion).
 		Logger()
 }

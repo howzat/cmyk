@@ -21,7 +21,10 @@ module.exports = async function processManifest(manifestData) {
   await updateDotEnv(dotEnvFile, {
     API_URL: getOutputValue('GraphQlApiUrl'),
     AWS_REGION: getOutputValue('AwsRegion'),
+    USERS_TABLE_ARN: getOutputValue('UsersTableArn'),
+    USERS_TABLE: getOutputValue('UsersTableName'),
     SIGNUP_LAMBDA: getOutputValue('ConfirmUserSignupLambdaFunctionQualifiedArn'),
+    COGNITO_USER_POOL_ID: getOutputValue('CognitoUserPoolId'),
   })
 }
 

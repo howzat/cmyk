@@ -2,37 +2,40 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/projects/cmyk-tools/handlers/util"
 	"github.com/stretchr/testify/assert"
-	"os"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
 func TestStoreAndRetrieveUser(t *testing.T) {
 
 	ctx := context.TODO()
+	err := godotenv.Load(fmt.Sprintf("../../.env.local"))
+	require.NoError(t, err)
+	region := requiredEnvironmentVariables(t)
 
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		t.Fatal("Error loading .env file")
-	}
+	repo, err := NewUsersTableRepo(ctx, region)
+	require.NoError(t, err)
 
-	region := os.Getenv("AWS_REGION")
-
-	t.Log(region)
-
-	repo := NewUsersTableRepo(ctx, region)
 	u := util.RandomUser()
-	savedUser, err := repo.AddUser(ctx, u.Username, u.Email)
-
+	savedUser, err := repo.AddTestUser(ctx, u, util.Short)
 	assert.NoError(t, err, "nope")
 
-	got, err := repo.GetUser(ctx, u.Email)
+	got, err := repo.GetUserByID(ctx, u.Id)
 	assert.NoError(t, err)
 
 	assert.Equal(t, savedUser.Id, got.Id)
 	assert.Equal(t, savedUser.Email, got.Email)
-	assert.Equal(t, savedUser.Username, got.Username)
+	assert.Equal(t, savedUser.Name, got.Name)
 	assert.Equal(t, savedUser.CreatedAt, got.CreatedAt)
+	assert.Equal(t, *(savedUser.Ttl), *(got.Ttl))
+}
+
+func requiredEnvironmentVariables(t *testing.T) string {
+	region := util.GetOSEnvOrFail(t, "AWS_REGION")
+	_ = util.GetOSEnvOrFail(t, "USERS_TABLE")
+	return region
 }

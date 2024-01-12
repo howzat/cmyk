@@ -1,8 +1,13 @@
 package model
 
+import (
+	"time"
+)
+
 type User struct {
-	Username  string `dynamodbav:"username" json:"username" validate:"required"`
-	Email     string `dynamodbav:"email" json:"email" validate:"required"`
-	Id        string `dynamodbav:"id" json:"id" validate:"required"`
-	CreatedAt string `dynamodbav:"createdAt" json:"createdAt" validate:"required"`
+	Id        string    `json:"username" validate:"required"`
+	Email     string    `json:"email" validate:"required"`
+	CreatedAt time.Time `json:"createdAt" validate:"required"`
+	Name      string    `json:"name"`
+	Ttl       *int64    `json:"ttl"`
 }

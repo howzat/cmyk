@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -28,10 +29,15 @@ type DynamoRepository struct {
 	Client    *dynamodb.Client
 }
 
-func NewInstance(ctx context.Context, region string, tablenameKey string) DynamoRepository {
+func NewInstance(ctx context.Context, region string, tablenameKey string) (*DynamoRepository, error) {
 	tablename := os.Getenv(tablenameKey)
 
-	return NewInstanceWithValues(*zerolog.Ctx(ctx), region, tablename)
+	if len(tablename) == 0 {
+		return nil, errors.New(fmt.Sprintf("Table name environment variable is not set [%s]", tablename))
+	}
+
+	db := NewInstanceWithValues(*zerolog.Ctx(ctx), region, tablename)
+	return &db, nil
 }
 
 // NewInstanceWithValues takes region and tablename as values instead of environment variable keys to be looked up.
