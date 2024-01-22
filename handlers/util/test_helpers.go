@@ -12,14 +12,18 @@ import (
 
 type TestUserOptions = func(user model.User) model.User
 
-func RandomUser(options ...TestUserOptions) model.User {
+func RandomTestUser(options ...TestUserOptions) model.User {
 	firstName := gofakeit.FirstName()
 	lastName := gofakeit.LastName()
 	title := gofakeit.NamePrefix()
 	user := model.User{
 		Id:    gofakeit.Username(),
-		Email: fmt.Sprintf("%s.%s@%s.com", firstName, lastName, gofakeit.WeekDay()),
+		Email: RandomEmail(firstName, lastName),
 		Name:  fmt.Sprintf("%s %s %s", title, firstName, lastName),
+		MetaData: model.MetaData{
+			IsTest:   true,
+			Lifespan: model.Short,
+		},
 	}
 
 	for _, option := range options {
@@ -29,26 +33,14 @@ func RandomUser(options ...TestUserOptions) model.User {
 	return user
 }
 
+func RandomEmail(firstName string, lastName string) string {
+	return fmt.Sprintf("testuser_%s.%s@%s.com", firstName, lastName, gofakeit.WeekDay())
+}
+
 func WithCreatedAt(createdAt time.Time) TestUserOptions {
 	return func(user model.User) model.User {
 		user.CreatedAt = createdAt
 		return user
-	}
-}
-
-type Lifespan int64
-
-const (
-	None Lifespan = iota
-	Short
-)
-
-func TestLifespan(l Lifespan, now time.Time) int64 {
-	switch l {
-	case Short:
-		return now.Add(1 * (24 * time.Hour)).Unix()
-	default:
-		return TestLifespan(Short, now)
 	}
 }
 

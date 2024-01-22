@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/projects/cmyk-tools/handlers/model"
 	"testing"
 	"time"
 )
@@ -11,7 +12,7 @@ func Test_TestLifespan(t *testing.T) {
 	oneDay := 24 * time.Hour
 
 	type args struct {
-		lifespan Lifespan
+		lifespan model.Lifespan
 		clock    Clock
 	}
 	tests := []struct {
@@ -22,7 +23,7 @@ func Test_TestLifespan(t *testing.T) {
 		{
 			name: "Short Lifespans should return 1 day in the future",
 			args: args{
-				lifespan: Short,
+				lifespan: model.Short,
 				clock:    NewFixedClock(fixedDate),
 			},
 			want: fixedDate.Add(oneDay).Unix(),
@@ -37,7 +38,7 @@ func Test_TestLifespan(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TestLifespan(tt.args.lifespan, tt.args.clock.Now()); got != tt.want {
+			if got := model.TestLifespan(tt.args.lifespan, tt.args.clock.Now()); got != tt.want {
 				t.Errorf("TestLifespan() = %v, want %v", got, tt.want)
 			}
 		})

@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/joho/godotenv"
+	"github.com/projects/cmyk-tools/handlers/model"
 	"github.com/projects/cmyk-tools/handlers/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 )
 
 func TestStoreAndRetrieveUser(t *testing.T) {
@@ -20,8 +22,9 @@ func TestStoreAndRetrieveUser(t *testing.T) {
 	repo, err := NewUsersTableRepo(ctx, region)
 	require.NoError(t, err)
 
-	u := util.RandomUser()
-	savedUser, err := repo.AddTestUser(ctx, u, util.Short)
+	now := time.Now()
+	u := util.RandomTestUser(util.WithCreatedAt(now))
+	savedUser, err := repo.AddTestUser(ctx, u, model.Short)
 	assert.NoError(t, err, "nope")
 
 	got, err := repo.GetUserByID(ctx, u.Id)
@@ -31,7 +34,7 @@ func TestStoreAndRetrieveUser(t *testing.T) {
 	assert.Equal(t, savedUser.Email, got.Email)
 	assert.Equal(t, savedUser.Name, got.Name)
 	assert.Equal(t, savedUser.CreatedAt, got.CreatedAt)
-	assert.Equal(t, *(savedUser.Ttl), *(got.Ttl))
+	assert.Equal(t, *(savedUser.MetaData.ExpiresAt), *(got.MetaData.ExpiresAt))
 }
 
 func requiredEnvironmentVariables(t *testing.T) string {

@@ -31,8 +31,8 @@ func NewUsersTableRepo(ctx context.Context, region string) (*UsersRepo, error) {
 	}, nil
 }
 
-func (r *UsersRepo) AddTestUser(ctx context.Context, user model.User, lifespan util.Lifespan) (*model.User, error) {
-	ttlExpiry := util.TestLifespan(lifespan, time.Now())
+func (r *UsersRepo) AddTestUser(ctx context.Context, user model.User, lifespan model.Lifespan) (*model.User, error) {
+	ttlExpiry := model.TestLifespan(lifespan, time.Now())
 	return r.addUser(ctx, user, &ttlExpiry)
 }
 
@@ -167,7 +167,8 @@ func (ue *userEntity) ToUser() (*model.User, error) {
 	}
 
 	if ue.ExpireAt > 0 {
-		user.Ttl = &ue.ExpireAt
+		user.MetaData.IsTest = true
+		user.MetaData.ExpiresAt = &ue.ExpireAt
 	}
 
 	return &user, nil

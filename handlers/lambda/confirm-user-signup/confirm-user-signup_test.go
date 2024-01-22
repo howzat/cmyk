@@ -39,7 +39,7 @@ func TestCognitoPostSignUp_Integration(t *testing.T) {
 	now := time.Now()
 	clock := util.NewFixedClock(now)
 	var handler CognitoPostSignUpFn = NewCognitoPostSignUpHandler(clock, *repo, WithLogger(util.NewDevLogger(zerolog.TraceLevel)))
-	user := util.RandomUser()
+	user := util.RandomTestUser()
 
 	_, err = handler(context.TODO(), *createCognitoPostSignUpEvent(user, region, userPoolID))
 	assert.NoError(t, err)

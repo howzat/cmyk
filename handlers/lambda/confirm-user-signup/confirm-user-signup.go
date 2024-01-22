@@ -28,12 +28,12 @@ func (h *cognitoPostSignUpHandler) Handler(ctx context.Context, event events.Cog
 	logger.Info().Msg("handling PostConfirmation_Confirm_SignUp event")
 
 	if strings.EqualFold(event.TriggerSource, "PostConfirmation_ConfirmSignUp") {
-		_, err := h.usersRepo.AddTestUser(ctx, model.User{
+		_, err := h.usersRepo.AddUser(ctx, model.User{
 			Id:        event.Request.UserAttributes["sub"],
 			Email:     event.Request.UserAttributes["email"],
 			Name:      event.Request.UserAttributes["name"],
 			CreatedAt: h.clock.Now(),
-		}, 0)
+		})
 
 		if err != nil {
 			logger.Err(err).Msg("error processing PostConfirmation_Confirm_SignUp")
