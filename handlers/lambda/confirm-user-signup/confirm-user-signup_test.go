@@ -9,9 +9,9 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/cenkalti/backoff/v4"
 	"github.com/joho/godotenv"
-	ddb "github.com/projects/cmyk-tools/handlers/db"
-	"github.com/projects/cmyk-tools/handlers/model"
-	"github.com/projects/cmyk-tools/handlers/util"
+	ddb "github.com/projects/cmyk-api/handlers/db"
+	"github.com/projects/cmyk-api/handlers/model"
+	"github.com/projects/cmyk-api/handlers/util"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,7 +27,7 @@ func TestCognitoPostSignUp_Integration(t *testing.T) {
 	}
 
 	ctx := context.TODO()
-	err := godotenv.Load("../../../.env", "../../../.env.static-refs")
+	err := godotenv.Load("../../../.env")
 	require.NoError(t, err)
 
 	region, userPoolID := requiredEnvironmentVariables(t)

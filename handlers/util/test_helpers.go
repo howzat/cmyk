@@ -3,7 +3,7 @@ package util
 import (
 	"fmt"
 	"github.com/brianvoe/gofakeit"
-	"github.com/projects/cmyk-tools/handlers/model"
+	"github.com/projects/cmyk-api/handlers/model"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"

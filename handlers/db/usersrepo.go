@@ -8,8 +8,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/projects/cmyk-tools/handlers/model"
-	"github.com/projects/cmyk-tools/handlers/util"
+	"github.com/projects/cmyk-api/handlers/model"
+	"github.com/projects/cmyk-api/handlers/util"
 	"github.com/rs/zerolog"
 	"time"
 )

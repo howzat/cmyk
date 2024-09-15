@@ -78,6 +78,29 @@ resources:
             Value: ${self:custom.stage}
           - Key: Name
             Value: users
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: cmyk-products
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+        KeySchema:
+          - AttributeName: pk
+            KeyType: HASH
+          - AttributeName: sk
+            KeyType: RANGE
+        AttributeDefinitions:
+          - AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        Tags:
+          - Key: Environment
+            Value: ${self:custom.stage}
+          - Key: Name
+            Value: products
     
     CognitoUserPool:
       Type: AWS::Cognito::UserPool

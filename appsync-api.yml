@@ -1,3 +1,4 @@
+
 name: cmyk-api
 schema: 'schema.api.graphql'
 authentication:
@@ -5,7 +6,15 @@ authentication:
   config:
     awsRegion: eu-west-2
     defaultAction: ALLOW
-    userPoolId: !Ref arn:aws:cognito-idp:eu-west-2:251218138950:userpool/eu-west-2_60KcaRD1C
+    userPoolId: !Ref CognitoUserPool
+
+mappingTemplatesLocation: mapping-templates
+mappingTemplates:
+  - type: Query
+    field: getProduct
+    dataSource: productsTable
+    request: Query.getProduct.request.vtl
+    response: Query.getProduct.response.vtl
 
 dataSources:
   - type: NONE

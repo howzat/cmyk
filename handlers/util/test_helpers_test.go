@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/projects/cmyk-tools/handlers/model"
+	"github.com/projects/cmyk-api/handlers/model"
 	"testing"
 	"time"
 )
