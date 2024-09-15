@@ -15,6 +15,7 @@ if [ -z "${DEV_ACCOUNT_ID}" ]; then
   exit 1
 else
   CREDS=$(aws sts assume-role --role-arn arn:aws:iam::"${DEV_ACCOUNT_ID}":role/CMYKDeployerRole --role-session-name=CMYKDeployerRole)
+  echo `${CREDS} | jq .`
   AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
   AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
   AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
