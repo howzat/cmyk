@@ -6,5 +6,3 @@ npm run sls -- create -t aws-go-mod
 aws-vault exec cmyk-dev -- npm run sls -- export-env --all
 aws-vault exec cmyk-dev -- npm run sls -- manifest
 ```
-
-No-op
